@@ -1,4 +1,4 @@
-package com.nus.ijuice.test;
+package com.nus.ijuice.repository;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,4 +1,4 @@
-package com.nus.ijuice.test;
+package com.nus.ijuice.repository;
 
 import com.nus.ijuice.dto.UserDto;
 import org.junit.Before;
@@ -34,7 +34,7 @@ public class FVMembershipApplicationTests extends AbstractApplicationTest{
 	}
 
 	/**
-	 * This is a positive test case for Create CIF And Account API
+	 * This is a positive repository case for Create CIF And Account API
 	 *
 	 * @throws Exception
 	 */
