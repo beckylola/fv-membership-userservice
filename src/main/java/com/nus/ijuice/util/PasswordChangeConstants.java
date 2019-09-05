@@ -1,4 +1,4 @@
-package util;
+package com.nus.ijuice.util;
 
 public interface PasswordChangeConstants {
     public static final String PASSWORD_CHANGE_SUCCESS = "Password updated successfully";

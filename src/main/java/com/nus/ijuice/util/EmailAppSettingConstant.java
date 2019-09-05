@@ -1,4 +1,4 @@
-package util;
+package com.nus.ijuice.util;
 
 public interface EmailAppSettingConstant {
     public static final String USERNAME = "username";

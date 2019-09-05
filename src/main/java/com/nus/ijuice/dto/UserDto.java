@@ -5,9 +5,9 @@ import com.nus.ijuice.Validator.Unique;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
-import static util.MessageConstants.USER_EMAIL_EXIST;
-import static util.MessageConstants.USER_EMAIL_REQUIRED;
-import static util.MessageConstants.USER_FIRST_NAME_REQUIRED;
+import static com.nus.ijuice.util.MessageConstants.USER_EMAIL_EXIST;
+import static com.nus.ijuice.util.MessageConstants.USER_EMAIL_REQUIRED;
+import static com.nus.ijuice.util.MessageConstants.USER_NAME_REQUIRED;
 
 
 @Unique.List({
@@ -17,7 +17,7 @@ import static util.MessageConstants.USER_FIRST_NAME_REQUIRED;
 
     public class UserDto {
 
-        @NotEmpty(message = USER_FIRST_NAME_REQUIRED )
+        @NotEmpty(message = USER_NAME_REQUIRED )
         private String username;
 
 	    @NotEmpty(message = "{user.password.error.required}")

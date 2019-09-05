@@ -3,7 +3,9 @@ package com.nus.ijuice.service.imp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nus.ijuice.Validator.PasswordValidator;
 import com.nus.ijuice.dto.PasswordDto;
+import com.nus.ijuice.dto.PasswordResponseDto;
 import com.nus.ijuice.dto.UserDto;
+import com.nus.ijuice.dto.VerifyUserDto;
 import com.nus.ijuice.model.EmailConfiguration;
 import com.nus.ijuice.model.SystemConfig;
 import com.nus.ijuice.model.Template;
@@ -17,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import util.EmailAppSettingConstant;
-import util.PasswordChangeConstants;
+import com.nus.ijuice.util.EmailAppSettingConstant;
+import com.nus.ijuice.util.PasswordChangeConstants;
 
 
 import java.util.Date;
@@ -75,6 +77,32 @@ public class UserServiceImp implements UserService {
 
         return mapper.convertValue(user, UserDto.class);
 
+    }
+
+    @Override
+    public PasswordResponseDto login(VerifyUserDto dto) throws Exception {
+        PasswordResponseDto responseDto=new PasswordResponseDto();
+        User exist=this.userRepository.findUserByUsernameOrEmail(dto.getUsername(),dto.getUsername());
+
+        if(exist==null){
+            responseDto.setStatus("0");
+            responseDto.setMessage("User name or email not found");
+        }
+        else {
+            boolean isPasswordMatches = this.passwordEncoder.matches(
+                    dto.getPassword(), exist.getPassword());
+            logger.info("user key in password::::" + dto.getPassword());
+            if (isPasswordMatches) {
+                responseDto.setStatus("1");
+                responseDto.setMessage("Valid password, Login success");
+            } else {
+                responseDto.setStatus("0");
+                responseDto.setMessage("Password not match");
+
+            }
+        }
+
+        return responseDto;
     }
 
     @Override
