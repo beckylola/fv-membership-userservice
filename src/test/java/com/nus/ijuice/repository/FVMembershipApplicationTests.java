@@ -17,124 +17,128 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class FVMembershipApplicationTests extends AbstractApplicationTest{
+public class FVMembershipApplicationTests extends AbstractApplicationTest {
 
-	private static Logger logger = LoggerFactory.getLogger(FVMembershipApplicationTests.class);
+    private static Logger logger = LoggerFactory.getLogger(FVMembershipApplicationTests.class);
 
-	private static String USER_REGISTER_URI = "/fv/v1.0/register";
-	private static String USER_LOGIN_URI ="/fv/v1.0/login";
-	private static String CHANGE_PASSWORD_URI = "/fv/v1.0/changepassword";
-	private static String FORGET_PASSWORD_URI ="/fv/v1.0/forgotpassword";
+    private static String USER_REGISTER_URI = "/fv/v1.0/register";
+    private static String USER_LOGIN_URI = "/fv/v1.0/login";
+    private static String CHANGE_PASSWORD_URI = "/fv/v1.0/changepassword";
+    private static String FORGET_PASSWORD_URI = "/fv/v1.0/forgotpassword";
 
-	@Autowired
-	private UserRepository userRepository;
-
-
-	@Override
-	@Before
-	public void setUp() {
-		super.setUp();
-	}
-
-	/**
-	 * This is a positive repository case for Create CIF And Account API
-	 *
-	 * @throws Exception
-	 */
+    @Autowired
+    private UserRepository userRepository;
 
 
-	@Test
-	public void registerPositiveTest() throws Exception {
-		UserDto mockRequest = this.getMockRequestUser();
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
 
-		// Perform API call
-		MvcResult mvcResult = this.performPostRequest(USER_REGISTER_URI, mockRequest, status().isOk());
+    /**
+     * This is a positive repository case for Create CIF And Account API
+     *
+     * @throws Exception
+     */
 
-		String content = mvcResult.getResponse().getContentAsString();
-		logger.info("=====Test new user=========");
-		logger.info(content);
 
-		assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
+    @Test
+    public void registerPositiveTest() throws Exception {
+        UserDto mockRequest = this.getMockRequestUser();
+
+        // Perform API call
+        MvcResult mvcResult = this.performPostRequest(USER_REGISTER_URI, mockRequest, status().isOk());
+
+        String content = mvcResult.getResponse().getContentAsString();
+        logger.info("=====Test new user=========");
+        logger.info(content);
+
+        assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
         UserDto response = mapFromJson(content, UserDto.class);
-		assertTrue("Name should not be empty", StringUtils.isNotEmpty(response.getUsername()));
-		assertTrue("Password should not be empty", StringUtils.isNotEmpty(response.getPassword()));
-		assertTrue("Email should not be empty", StringUtils.isNotEmpty(response.getEmail()));
-	}
+        assertTrue("Name should not be empty", StringUtils.isNotEmpty(response.getUsername()));
+        assertTrue("Password should not be empty", StringUtils.isNotEmpty(response.getPassword()));
+        assertTrue("Email should not be empty", StringUtils.isNotEmpty(response.getEmail()));
+    }
 
-	private UserDto getMockRequestUser() {
-		UserDto dto = new UserDto();
-		dto.setUsername("xj");
-		dto.setEmail("xj@gmail.com");
-		dto.setPassword("1234567");
+    private UserDto getMockRequestUser() {
+        UserDto dto = new UserDto();
+        dto.setUsername("xj");
+        dto.setEmail("xj@gmail.com");
+        dto.setPassword("1234567");
 
-		return dto;
-	}
-	@Test
-	public void loginPositiveTest() throws Exception {
-		VerifyUserDto mockRequest = this.getMockRequestlogin();
+        return dto;
+    }
 
-		// Perform API call
-		MvcResult mvcResult = this.performPostRequest(USER_LOGIN_URI, mockRequest, status().isOk());
+    @Test
+    public void loginPositiveTest() throws Exception {
+        VerifyUserDto mockRequest = this.getMockRequestlogin();
 
-		String content = mvcResult.getResponse().getContentAsString();
-		logger.info("=====Test new user=========");
-		logger.info(content);
+        // Perform API call
+        MvcResult mvcResult = this.performPostRequest(USER_LOGIN_URI, mockRequest, status().isOk());
 
-		assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
-		PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
-		assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
-		assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
+        String content = mvcResult.getResponse().getContentAsString();
+        logger.info("=====Test new user=========");
+        logger.info(content);
 
-	}
+        assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
+        PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
+        assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
+        assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
 
-	private VerifyUserDto getMockRequestlogin() {
-		VerifyUserDto dto = new VerifyUserDto();
-		dto.setUsername("xj");
-		dto.setPassword("1234567");
-		return dto;
-	}
+    }
 
-	@Test
-	public void ForgetPasswordPositiveTest() throws Exception {
-		EmailDto mockRequest = this.getMockRequestForgetPassword();
-		// Perform API call
-		MvcResult mvcResult = this.performPostRequest(FORGET_PASSWORD_URI, mockRequest, status().isOk());
+    private VerifyUserDto getMockRequestlogin() {
+        VerifyUserDto dto = new VerifyUserDto();
+        dto.setUsername("xj");
+        dto.setPassword("1234567");
+        return dto;
+    }
 
-		String content = mvcResult.getResponse().getContentAsString();
-		logger.info("===== Test forget password =========");
-		logger.info(content);
+    @Test
+    public void ForgetPasswordPositiveTest() throws Exception {
+        EmailDto mockRequest = this.getMockRequestForgetPassword();
+        // Perform API call
+        MvcResult mvcResult = this.performPostRequest(FORGET_PASSWORD_URI, mockRequest, status().isOk());
 
-		assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
-		PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
-		assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
-		assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
-	}
-	private EmailDto getMockRequestForgetPassword() {
-		EmailDto dto = new EmailDto();
-		dto.setEmail("xujiao7078@gmail.com");
-		return dto;
-	}
+        String content = mvcResult.getResponse().getContentAsString();
+        logger.info("===== Test forget password =========");
+        logger.info(content);
 
-	@Test
-	public void ChangePasswordPositiveTest() throws Exception {
-		PasswordDto mockRequest = this.getMockRequestChangePassword();
-		// Perform API call
-		MvcResult mvcResult = this.performPostRequest(CHANGE_PASSWORD_URI, mockRequest, status().isOk());
+        assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
+        PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
+        assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
+        assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
+    }
 
-		String content = mvcResult.getResponse().getContentAsString();
-		logger.info("===== Test Change password =========");
-		logger.info(content);
+    private EmailDto getMockRequestForgetPassword() {
+        EmailDto dto = new EmailDto();
+        dto.setEmail("xj@gmail.com");
+        return dto;
+    }
 
-		assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
-		PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
-		assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
-		assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
-	}
-	private PasswordDto getMockRequestChangePassword() {
-		PasswordDto dto = new PasswordDto();
-		dto.setCurrentPassword("kgnthicqke");
-		dto.setNewPassword("Password@123");
-		return dto;
-	}
+    @Test
+    public void ChangePasswordPositiveTest() throws Exception {
+        PasswordDto mockRequest = this.getMockRequestChangePassword();
+        // Perform API call
+        MvcResult mvcResult = this.performPostRequest(CHANGE_PASSWORD_URI, mockRequest, status().isOk());
+
+        String content = mvcResult.getResponse().getContentAsString();
+        logger.info("===== Test Change password =========");
+        logger.info(content);
+
+        assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
+        PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
+        assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
+        assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
+    }
+
+    private PasswordDto getMockRequestChangePassword() {
+        PasswordDto dto = new PasswordDto();
+        dto.setCurrentPassword("1234567");
+        dto.setNewPassword("Password@123");
+        dto.setEmail("xj@gmail.com");
+        return dto;
+    }
 
 }

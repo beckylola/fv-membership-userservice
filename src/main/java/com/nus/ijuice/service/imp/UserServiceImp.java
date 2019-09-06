@@ -32,11 +32,13 @@ public class UserServiceImp implements UserService {
     final Logger logger = LoggerFactory.getLogger(UserServiceImp.class);
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private SystemConfigRepository systemConfigRepository;
 
     @Autowired
     EmailUtil emailUtil;
+
     @Autowired
     private ObjectMapper mapper;
 
@@ -59,8 +61,8 @@ public class UserServiceImp implements UserService {
     public UserDto save(UserDto userDto) {
         User user = mapper.convertValue(userDto, User.class);
 
-        User exist=this.userRepository.findUserByEmail(user.getEmail());
-        if (exist!=null && StringUtils.isEmpty(user.getPassword())) {
+        User exist = this.userRepository.findUserByEmail(user.getEmail());
+        if (exist == null) {
             user.setPassword(passwordEncoder
                     .encode(user.getPassword()));
 
@@ -70,7 +72,7 @@ public class UserServiceImp implements UserService {
 
         } else {
 
-            user.setUserId(exist.getUserId());
+            exist.setUserId(user.getUserId());
 
         }
         user = userRepository.save(user);
@@ -81,14 +83,13 @@ public class UserServiceImp implements UserService {
 
     @Override
     public PasswordResponseDto login(VerifyUserDto dto) throws Exception {
-        PasswordResponseDto responseDto=new PasswordResponseDto();
-        User exist=this.userRepository.findUserByUsernameOrEmail(dto.getUsername(),dto.getUsername());
+        PasswordResponseDto responseDto = new PasswordResponseDto();
+        User exist = this.userRepository.findUserByUsernameOrEmail(dto.getUsername(), dto.getUsername());
 
-        if(exist==null){
+        if (exist == null) {
             responseDto.setStatus("0");
             responseDto.setMessage("User name or email not found");
-        }
-        else {
+        } else {
             boolean isPasswordMatches = this.passwordEncoder.matches(
                     dto.getPassword(), exist.getPassword());
             logger.info("user key in password::::" + dto.getPassword());
@@ -116,7 +117,7 @@ public class UserServiceImp implements UserService {
             user.setLastPasswordChangedOn(date);
             user = userRepository.save(user);
             templateOptObj = emailUtil.loadTemplate(2);
-            if (templateOptObj!=null) {
+            if (templateOptObj != null) {
                 templateObj = templateOptObj;
                 String emailContent = emailUtil.replaceEmailContentPlaceholder(
                         user, templateObj.getEmailContent(), generatedPassword);
@@ -135,34 +136,37 @@ public class UserServiceImp implements UserService {
         // boolean isPasswordChanged = false;
         String response = "";
         String passwordPattern = "";
-        // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        //String email = auth.getName();
-        String email="xujiao7078@gmail.com";
-        User user = userRepository.findByEmail(email);
-        boolean isPasswordMatches = this.passwordEncoder.matches(
-                passwordDto.getCurrentPassword(), user.getPassword());
-        logger.info("New password::::" + passwordDto.getNewPassword());
-        SystemConfig appSetting = systemConfigRepository.findSystemConfigByConfigname(PasswordChangeConstants.PASSWORD_PATTERN);
-        if( appSetting.getConfigname().equals(PasswordChangeConstants.PASSWORD_PATTERN))
-        {
-            passwordPattern = appSetting.getConfigsetting();
-        }
-        if (passwordValidator.validate(passwordDto.getNewPassword(),passwordPattern)) {
-            if (isPasswordMatches) {
-                user.setPassword(new BCryptPasswordEncoder().encode(passwordDto
-                        .getNewPassword()));
-                Date date = new Date();
-                user.setLastPasswordChangedOn(date);
-                userRepository.save(user);
-                response = PasswordChangeConstants.PASSWORD_CHANGE_SUCCESS;
-                logger.info("User password changed succesfully");
-                userRepository.updateResetPassword(0, email);
-            } else {
-                response = PasswordChangeConstants.PASSWORD_CHANGE_FAILURE;
-                logger.info("Current password not matched");
+        User user = userRepository.findByEmail(passwordDto.getEmail());
+        if(user!=null) {
+            boolean isPasswordMatches = this.passwordEncoder.matches(
+                    passwordDto.getCurrentPassword(), user.getPassword());
+            logger.info("New password::::" + passwordDto.getNewPassword());
+            SystemConfig appSetting = systemConfigRepository.findSystemConfigByConfigname(PasswordChangeConstants.PASSWORD_PATTERN);
+            if(appSetting!=null) {
+                if (appSetting.getConfigname().equals(PasswordChangeConstants.PASSWORD_PATTERN)) {
+                    passwordPattern = appSetting.getConfigsetting();
+                }
             }
-        } else {
-            response = PasswordChangeConstants.PASSWORD_POLICY_CORRUPT;
+            if (passwordValidator.validate(passwordDto.getNewPassword(), passwordPattern)) {
+                if (isPasswordMatches) {
+                    user.setPassword(new BCryptPasswordEncoder().encode(passwordDto
+                            .getNewPassword()));
+                    Date date = new Date();
+                    user.setLastPasswordChangedOn(date);
+                    userRepository.save(user);
+                    response = PasswordChangeConstants.PASSWORD_CHANGE_SUCCESS;
+                    logger.info("User password changed succesfully");
+                    userRepository.updateResetPassword(0, passwordDto.getEmail());
+                } else {
+                    response = PasswordChangeConstants.PASSWORD_CHANGE_FAILURE;
+                    logger.info("Current password not matched");
+                }
+            } else {
+                response = PasswordChangeConstants.PASSWORD_POLICY_CORRUPT;
+            }
+        }
+        else{
+            response="Email not found";
         }
         return response;
     }

@@ -9,24 +9,18 @@ import static com.nus.ijuice.util.MessageConstants.USER_EMAIL_EXIST;
 import static com.nus.ijuice.util.MessageConstants.USER_EMAIL_REQUIRED;
 import static com.nus.ijuice.util.MessageConstants.USER_NAME_REQUIRED;
 
+public class UserDto {
 
-@Unique.List({
-            @Unique(field = "email", dependField = "userId", message = USER_EMAIL_EXIST),
+    @NotEmpty(message = USER_NAME_REQUIRED)
+    private String username;
 
-    })
+    @NotEmpty(message = "{user.password.error.required}")
+    private String password;
 
-    public class UserDto {
+    @NotEmpty(message = USER_EMAIL_REQUIRED)
+    private String email;
 
-        @NotEmpty(message = USER_NAME_REQUIRED )
-        private String username;
-
-	    @NotEmpty(message = "{user.password.error.required}")
-        private String password;
-
-        @NotEmpty(message = USER_EMAIL_REQUIRED)
-        private String email;
-
-        private Date createdOn;
+    private Date createdOn;
 
 
     public String getUsername() {

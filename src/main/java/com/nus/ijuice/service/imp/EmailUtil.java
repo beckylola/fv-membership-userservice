@@ -41,9 +41,7 @@ public class EmailUtil implements EmailService {
                             .getConfigname())) {
                         emailconfig.setUserName(item.getConfigsetting());
                     } else if (EmailAppSettingConstant.PASSWORD.equals(item
-                            .getConfigname()))
-
-                    {
+                            .getConfigname())) {
                         emailconfig.setPassword(item.getConfigsetting());
                     } else if (EmailAppSettingConstant.HOST.equals(item
                             .getConfigname())) {
@@ -60,7 +58,7 @@ public class EmailUtil implements EmailService {
     @Override
     public Boolean sendSimpleMessage(String toEmail, String subject,
                                      String content, EmailConfiguration emailConfig) {
-        Boolean result=true;
+        Boolean result = true;
         // Sender's email ID needs to be mentioned
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -90,9 +88,9 @@ public class EmailUtil implements EmailService {
             message.setContent(content, "text/html; charset=utf-8");
             // Send message
             Transport.send(message);
-            logger.info("Email Sent successfully to...."+toEmail);
+            logger.info("Email Sent successfully to...." + toEmail);
         } catch (javax.mail.MessagingException e) {
-            result=false;
+            result = false;
             e.printStackTrace();
 
             throw new RuntimeException(e);
@@ -120,18 +118,16 @@ public class EmailUtil implements EmailService {
         } else {
             content = content.replace(placeholderList.get(0).toString(), "");
         }
-        if(user.getEmail() !=null && user.getEmail().length() >0 && !user.getEmail().isEmpty())
-        {
+        if (user.getEmail() != null && user.getEmail().length() > 0 && !user.getEmail().isEmpty()) {
             content = content.replace(placeholderList.get(2), user.getEmail());
         }
-        content = content.replace(placeholderList.get(1).toString(),password);
+        content = content.replace(placeholderList.get(1).toString(), password);
         return content;
 
     }
 
-    public List<String> getEmailKeyList()
-    {
-        String[] keys = { "username", "password", "host", "port"};
+    public List<String> getEmailKeyList() {
+        String[] keys = {"username", "password", "host", "port"};
         List<String> emailKeyList = new ArrayList<String>(Arrays.asList(keys));
         return emailKeyList;
     }

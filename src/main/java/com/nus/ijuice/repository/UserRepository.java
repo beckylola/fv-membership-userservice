@@ -13,12 +13,16 @@ import javax.transaction.Transactional;
 public interface UserRepository extends JpaRepository<User, String> {
 
     boolean existsByEmail(String emailid);
+
     User findUserByEmail(String email);
-    User findUserByUsernameOrEmail(String username,String email);
+
+    User findUserByUsernameOrEmail(String username, String email);
+
     User findByEmail(String email);
+
     @Modifying
     @Transactional
-    @Query(value = "update users u set u.reset_password = ?1 where u.emailid = ?2",nativeQuery=true)
-    int updateResetPassword(int val,String emailId);
+    @Query(value = "update users u set u.reset_password = ?1 where u.emailid = ?2", nativeQuery = true)
+    int updateResetPassword(int val, String emailId);
 
 }

@@ -3,6 +3,7 @@ package com.nus.ijuice.dto;
 public class PasswordDto {
     private String currentPassword;
     private String newPassword;
+    private String email;
 
     public String getCurrentPassword() {
         return currentPassword;
@@ -18,5 +19,13 @@ public class PasswordDto {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

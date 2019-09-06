@@ -9,8 +9,12 @@ import java.text.ParseException;
 
 public interface UserService {
     boolean existsByEmail(String emailid);
+
     UserDto save(UserDto userDto) throws ParseException;
+
     PasswordResponseDto login(VerifyUserDto dto) throws Exception;
+
     String forgotPassword(String email);
+
     String changePassword(PasswordDto passwordDto);
 }

@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface EmailService {
     public EmailConfiguration findByKey(List<String> key);
+
     public Boolean sendSimpleMessage(String to, String subject, String text, EmailConfiguration emailConfig);
+
     public Template loadTemplate(int templateId);
 
 }

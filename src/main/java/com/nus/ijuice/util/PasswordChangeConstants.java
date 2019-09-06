@@ -7,7 +7,7 @@ public interface PasswordChangeConstants {
             + " 8 characters long, "
             + " 1 uppercase & 1 lowercase character, "
             + " 1 number, "
-            +" 1 special charecter[ @ # $ % ! . ]";
+            + " 1 special charecter[ @ # $ % ! . ]";
     public static final String PASSWORD_POLICY = "passwordpolicy";
     public static final String PASSWORD_PATTERN = "passwordPattern";
 }

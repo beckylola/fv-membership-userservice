@@ -3,23 +3,23 @@ package com.nus.ijuice.model;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity(name="Template")
+@Entity(name = "Template")
 public class Template {
     @Id
-    @Column(name="template_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "template_id")
     private int templateId;
 
-    @Column(name="subject")
+    @Column(name = "subject")
     private String subject;
 
-    @Column(name="emailcontent", columnDefinition = "NVARCHAR2(1000)")
+    @Column(name = "emailcontent")
     private String emailContent;
 
-    @Column(name="created_on")
+    @Column(name = "created_on")
     private Date createdOn;
 
-    @Column(name="created_by")
+    @Column(name = "created_by")
     private String createdBy;
 
     public int getTemplateId() {
@@ -62,4 +62,3 @@ public class Template {
         this.createdBy = createdBy;
     }
 }
-

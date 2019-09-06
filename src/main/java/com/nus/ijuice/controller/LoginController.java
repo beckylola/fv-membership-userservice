@@ -32,12 +32,13 @@ public class LoginController {
             @Valid @RequestBody UserDto userDto) throws ParseException {
         try {
             UserDto userODto = userService.save(userDto);
-            logger.info("'"+userDto.getUsername()+"' user created successfully");
+            logger.info("'" + userDto.getUsername() + "' user created successfully");
             return new ResponseEntity<UserDto>(userODto, HttpStatus.OK);
         } catch (Exception e) {
             throw e;
         }
     }
+
     @PostMapping(path = "/login", produces = "application/json")
     public ResponseEntity<PasswordResponseDto> verifyUser(
             @Valid @RequestBody VerifyUserDto dto) throws Exception {
@@ -49,6 +50,7 @@ public class LoginController {
             throw e;
         }
     }
+
     @PostMapping(path = "/forgotpassword", consumes = "application/json")
     public ResponseEntity<PasswordResponseDto> forgotPassword(@RequestBody EmailDto emailDto) {
 
@@ -57,12 +59,12 @@ public class LoginController {
         if (response.equals(EmailAppSettingConstant.PASSWORD_SENT)) {
             responseDto.setStatus("1");
             responseDto.setMessage(EmailAppSettingConstant.PASSWORD_SENT);
-            logger.info("Password sent successfully to '"+emailDto.getEmail()+"'");
+            logger.info("Password sent successfully to '" + emailDto.getEmail() + "'");
 
         } else {
             responseDto.setStatus("0");
             responseDto.setMessage(EmailAppSettingConstant.INVALID_EMAILID);
-            logger.info("Invalid email '"+emailDto.getEmail()+"'");
+            logger.info("Invalid email '" + emailDto.getEmail() + "'");
         }
         return new ResponseEntity<PasswordResponseDto>(responseDto, HttpStatus.OK);
     }

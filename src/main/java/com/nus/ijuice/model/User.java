@@ -1,4 +1,5 @@
 package com.nus.ijuice.model;
+
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -38,11 +39,6 @@ public class User implements Serializable {
     @Column(name = "last_password_changedon")
     private Date lastPasswordChangedOn;
 
-    @Column(name = "account_locked", nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean accountLocked = false;
-
-    @Column(name = "last_login", nullable = false, columnDefinition = "DATETIME")
-    private Date lastLogin;
 
     /**
      *
@@ -52,7 +48,6 @@ public class User implements Serializable {
     }
 
     /**
-     *
      * @param userId
      * @param username
      * @param password
@@ -60,8 +55,8 @@ public class User implements Serializable {
      * @param createdOn
      * @param isActive
      */
-    public User(String userId, String username,String password,
-                String email, Date createdOn,Boolean isActive) {
+    public User(String userId, String username, String password,
+                String email, Date createdOn, Boolean isActive) {
         super();
         this.userId = userId;
         this.username = username;
@@ -72,12 +67,11 @@ public class User implements Serializable {
     }
 
     /**
-     *
      * @param userId
      * @param username
      * @param email
      */
-    public User(String userId, String username,String email) {
+    public User(String userId, String username, String email) {
         super();
         this.userId = userId;
         this.username = username;
@@ -150,21 +144,5 @@ public class User implements Serializable {
 
     public void setLastPasswordChangedOn(Date lastPasswordChangedOn) {
         this.lastPasswordChangedOn = lastPasswordChangedOn;
-    }
-
-    public Boolean getAccountLocked() {
-        return accountLocked;
-    }
-
-    public void setAccountLocked(Boolean accountLocked) {
-        this.accountLocked = accountLocked;
-    }
-
-    public Date getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(Date lastLogin) {
-        this.lastLogin = lastLogin;
     }
 }
