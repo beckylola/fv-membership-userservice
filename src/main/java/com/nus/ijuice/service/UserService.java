@@ -1,13 +1,11 @@
 package com.nus.ijuice.service;
 
-import com.nus.ijuice.dto.PasswordDto;
-import com.nus.ijuice.dto.PasswordResponseDto;
-import com.nus.ijuice.dto.UserDto;
-import com.nus.ijuice.dto.VerifyUserDto;
+import com.nus.ijuice.dto.*;
 
 import java.text.ParseException;
 
 public interface UserService {
+
     boolean existsByEmail(String emailid);
 
     UserDto save(UserDto userDto) throws ParseException;
@@ -17,4 +15,6 @@ public interface UserService {
     String forgotPassword(String email);
 
     String changePassword(PasswordDto passwordDto);
+
+    OTPDto SendOTPToUserEmail(EmailDto dto);
 }

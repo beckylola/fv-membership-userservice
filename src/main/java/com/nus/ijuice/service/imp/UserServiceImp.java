@@ -2,10 +2,7 @@ package com.nus.ijuice.service.imp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nus.ijuice.Validator.PasswordValidator;
-import com.nus.ijuice.dto.PasswordDto;
-import com.nus.ijuice.dto.PasswordResponseDto;
-import com.nus.ijuice.dto.UserDto;
-import com.nus.ijuice.dto.VerifyUserDto;
+import com.nus.ijuice.dto.*;
 import com.nus.ijuice.model.EmailConfiguration;
 import com.nus.ijuice.model.SystemConfig;
 import com.nus.ijuice.model.Template;
@@ -18,11 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import com.nus.ijuice.util.EmailAppSettingConstant;
 import com.nus.ijuice.util.PasswordChangeConstants;
 
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -69,6 +66,8 @@ public class UserServiceImp implements UserService {
             Date date = new Date();
             user.setLastPasswordChangedOn(date);
             user.setCreatedOn(date);
+            if (user.getAccount_source() == null)
+                user.setAccount_source("FvMembership");
 
         } else {
 
@@ -137,12 +136,12 @@ public class UserServiceImp implements UserService {
         String response = "";
         String passwordPattern = "";
         User user = userRepository.findByEmail(passwordDto.getEmail());
-        if(user!=null) {
+        if (user != null) {
             boolean isPasswordMatches = this.passwordEncoder.matches(
                     passwordDto.getCurrentPassword(), user.getPassword());
             logger.info("New password::::" + passwordDto.getNewPassword());
             SystemConfig appSetting = systemConfigRepository.findSystemConfigByConfigname(PasswordChangeConstants.PASSWORD_PATTERN);
-            if(appSetting!=null) {
+            if (appSetting != null) {
                 if (appSetting.getConfigname().equals(PasswordChangeConstants.PASSWORD_PATTERN)) {
                     passwordPattern = appSetting.getConfigsetting();
                 }
@@ -164,11 +163,43 @@ public class UserServiceImp implements UserService {
             } else {
                 response = PasswordChangeConstants.PASSWORD_POLICY_CORRUPT;
             }
-        }
-        else{
-            response="Email not found";
+        } else {
+            response = "Email not found";
         }
         return response;
+    }
+
+    @Override
+    public OTPDto SendOTPToUserEmail(EmailDto dto) {
+        OTPDto otpDto = new OTPDto();
+        User user = userRepository.findByEmail(dto.getEmail());
+        if (user != null) {
+            String otp = this.getRandomNumberString();
+            templateOptObj = emailUtil.loadTemplate(3);
+            if (templateOptObj != null) {
+                templateObj = templateOptObj;
+                String emailContent = emailUtil.replaceEmailContentPlaceholder(
+                        user, templateObj.getEmailContent(), otp);
+                emailConfig = emailUtil.findByKey(emailUtil.getEmailKeyList());
+                emailUtil.sendSimpleMessage(user.getEmail(),
+                        templateObj.getSubject(), emailContent, emailConfig);
+                otpDto.setEmail(dto.getEmail());
+                otpDto.setOtp(otp);
+                otpDto.setExpAt(getAfterAdding(2));
+                otpDto.setStatus(1);
+                otpDto.setMessage("Otp send successfully");
+            }
+            else{
+                otpDto.setStatus(0);
+                otpDto.setMessage("Template not found");
+            }
+
+
+        } else {
+            otpDto.setStatus(0);
+            otpDto.setMessage("Email not found");
+        }
+        return otpDto;
     }
 
     private String generateRandomPassword() {
@@ -185,4 +216,25 @@ public class UserServiceImp implements UserService {
         String generatedPassword = buffer.toString();
         return generatedPassword;
     }
+
+
+    public static String getRandomNumberString() {
+        // It will generate 6 digit random Number.
+        // from 0 to 999999
+        Random rnd = new Random();
+        int number = rnd.nextInt(999999);
+
+        // this will convert any number sequence into 6 character.
+        return String.format("%06d", number);
+    }
+
+    public Date getAfterAdding(int times) {
+    final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
+
+    Calendar date = Calendar.getInstance();
+    long t = date.getTimeInMillis();
+    Date afterAddingTwoMins = new Date(t + (times * ONE_MINUTE_IN_MILLIS));
+    return afterAddingTwoMins;
+}
+
 }

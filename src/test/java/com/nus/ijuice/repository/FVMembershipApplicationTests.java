@@ -25,7 +25,7 @@ public class FVMembershipApplicationTests extends AbstractApplicationTest {
     private static String USER_LOGIN_URI = "/fv/v1.0/login";
     private static String CHANGE_PASSWORD_URI = "/fv/v1.0/changepassword";
     private static String FORGET_PASSWORD_URI = "/fv/v1.0/forgotpassword";
-
+    private static String SEND_OTP_URI = "/fv/v1.0/sendOtp";
     @Autowired
     private UserRepository userRepository;
 
@@ -140,5 +140,22 @@ public class FVMembershipApplicationTests extends AbstractApplicationTest {
         dto.setEmail("xj@gmail.com");
         return dto;
     }
+
+    @Test
+    public void SendOTPPositiveTest() throws Exception {
+        EmailDto mockRequest = this.getMockRequestForgetPassword();
+        // Perform API call
+        MvcResult mvcResult = this.performPostRequest(SEND_OTP_URI, mockRequest, status().isOk());
+
+        String content = mvcResult.getResponse().getContentAsString();
+        logger.info("===== Test send otp =========");
+        logger.info(content);
+
+        assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
+        OTPDto response = mapFromJson(content, OTPDto.class);
+        assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
+        assertTrue("Status should not be empty", StringUtils.isNotEmpty(String.valueOf(response.getStatus())));
+    }
+
 
 }

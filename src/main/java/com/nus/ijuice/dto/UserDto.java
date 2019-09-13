@@ -21,6 +21,7 @@ public class UserDto {
     private String email;
 
     private Date createdOn;
+    private String account_source;
 
 
     public String getUsername() {
@@ -55,4 +56,11 @@ public class UserDto {
         this.createdOn = createdOn;
     }
 
+    public String getAccount_source() {
+        return account_source;
+    }
+
+    public void setAccount_source(String account_source) {
+        this.account_source = account_source;
+    }
 }

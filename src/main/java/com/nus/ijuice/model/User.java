@@ -25,6 +25,8 @@ public class User implements Serializable {
 
     @Column(name = "emailid", unique = true, nullable = false, length = 100)
     private String email;
+    @Column(name = "account_source", unique = false, nullable = false, length = 100)
+    private String account_source;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_date", length = 10, updatable = false)
@@ -144,5 +146,13 @@ public class User implements Serializable {
 
     public void setLastPasswordChangedOn(Date lastPasswordChangedOn) {
         this.lastPasswordChangedOn = lastPasswordChangedOn;
+    }
+
+    public String getAccount_source() {
+        return account_source;
+    }
+
+    public void setAccount_source(String account_source) {
+        this.account_source = account_source;
     }
 }

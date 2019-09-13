@@ -93,4 +93,13 @@ public class LoginController {
 
         return new ResponseEntity<Object>(responseDto, HttpStatus.OK);
     }
+
+    @PostMapping(path = "/sendOtp", consumes = "application/json")
+    public ResponseEntity<OTPDto> sendOtp(@RequestBody EmailDto emailDto) {
+
+        OTPDto response = userService.SendOTPToUserEmail(emailDto);
+
+        return new ResponseEntity<OTPDto>(response, HttpStatus.OK);
+    }
+
 }
