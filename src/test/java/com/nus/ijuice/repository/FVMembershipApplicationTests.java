@@ -63,9 +63,9 @@ public class FVMembershipApplicationTests extends AbstractApplicationTest {
 
     private UserDto getMockRequestUser() {
         UserDto dto = new UserDto();
-        dto.setUsername("xj");
-        dto.setEmail("xj@gmail.com");
-        dto.setPassword("1234567");
+        dto.setUsername("april");
+        dto.setEmail("al@gmail.com");
+        dto.setPassword("123sts4567");
 
         return dto;
     }

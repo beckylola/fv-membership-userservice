@@ -13,12 +13,15 @@ import com.nus.ijuice.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.nus.ijuice.util.EmailAppSettingConstant;
 import com.nus.ijuice.util.PasswordChangeConstants;
 
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -39,8 +42,8 @@ public class UserServiceImp implements UserService {
     @Autowired
     private ObjectMapper mapper;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+//    @Autowired
+//    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private PasswordValidator passwordValidator;
@@ -60,8 +63,15 @@ public class UserServiceImp implements UserService {
 
         User exist = this.userRepository.findUserByEmail(user.getEmail());
         if (exist == null) {
-            user.setPassword(passwordEncoder
-                    .encode(user.getPassword()));
+//            user.setPassword(passwordEncoder
+//                    .encode(user.getPassword()));
+            try {
+                byte[] salt = getSalt();
+                user.setPassword(getHashPassword(user.getPassword(),salt));
+                user.setSalt(salt);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
 
             Date date = new Date();
             user.setLastPasswordChangedOn(date);
@@ -89,8 +99,12 @@ public class UserServiceImp implements UserService {
             responseDto.setStatus("0");
             responseDto.setMessage("User name or email not found");
         } else {
-            boolean isPasswordMatches = this.passwordEncoder.matches(
-                    dto.getPassword(), exist.getPassword());
+//            boolean isPasswordMatches = this.passwordEncoder.matches(
+//                    dto.getPassword(), exist.getPassword());
+            boolean isPasswordMatches=false;
+            if(getHashPassword(dto.getPassword(),exist.getSalt()).equals(exist.getPassword())){
+                isPasswordMatches=true;
+            }
             logger.info("user key in password::::" + dto.getPassword());
             if (isPasswordMatches) {
                 responseDto.setStatus("1");
@@ -110,8 +124,16 @@ public class UserServiceImp implements UserService {
         User user = userRepository.findByEmail(email);
         if (user != null) {
             String generatedPassword = generateRandomPassword();
-            user.setPassword(new BCryptPasswordEncoder()
-                    .encode(generatedPassword));
+//            user.setPassword(new BCryptPasswordEncoder()
+//                    .encode(generatedPassword));
+            try {
+                byte[] salt = getSalt();
+                user.setPassword(getHashPassword(user.getPassword(),salt));
+                user.setSalt(salt);
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+
             Date date = new Date();
             user.setLastPasswordChangedOn(date);
             user = userRepository.save(user);
@@ -137,8 +159,13 @@ public class UserServiceImp implements UserService {
         String passwordPattern = "";
         User user = userRepository.findByEmail(passwordDto.getEmail());
         if (user != null) {
-            boolean isPasswordMatches = this.passwordEncoder.matches(
-                    passwordDto.getCurrentPassword(), user.getPassword());
+//            boolean isPasswordMatches = this.passwordEncoder.matches(
+//                    passwordDto.getCurrentPassword(), user.getPassword());
+
+            boolean isPasswordMatches=false;
+            if(getHashPassword(passwordDto.getCurrentPassword(),user.getSalt()).equals(user.getPassword())){
+                isPasswordMatches=true;
+            }
             logger.info("New password::::" + passwordDto.getNewPassword());
             SystemConfig appSetting = systemConfigRepository.findSystemConfigByConfigname(PasswordChangeConstants.PASSWORD_PATTERN);
             if (appSetting != null) {
@@ -148,8 +175,14 @@ public class UserServiceImp implements UserService {
             }
             if (passwordValidator.validate(passwordDto.getNewPassword(), passwordPattern)) {
                 if (isPasswordMatches) {
-                    user.setPassword(new BCryptPasswordEncoder().encode(passwordDto
-                            .getNewPassword()));
+                    try {
+                        byte[] salt = getSalt();
+                        user.setPassword(getHashPassword(passwordDto.getNewPassword(),salt));
+                        user.setSalt(salt);
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+
                     Date date = new Date();
                     user.setLastPasswordChangedOn(date);
                     userRepository.save(user);
@@ -200,6 +233,42 @@ public class UserServiceImp implements UserService {
             otpDto.setMessage("Email not found");
         }
         return otpDto;
+    }
+    private String getHashPassword(String passwordToHash,byte[] salt){
+        String  securePassword="";
+
+            securePassword = get_SHA_512_SecurePassword(passwordToHash, salt);
+
+        return securePassword;
+
+    }
+    private static byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt);
+        return salt;
+    }
+
+    private static String get_SHA_512_SecurePassword(String passwordToHash, byte[] salt)
+    {
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(salt);
+            byte[] bytes = md.digest(passwordToHash.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i< bytes.length ;i++)
+            {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+        return generatedPassword;
     }
 
     private String generateRandomPassword() {
