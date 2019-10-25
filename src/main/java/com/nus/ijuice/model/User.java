@@ -24,7 +24,7 @@ public class User implements Serializable {
     private String password;
     @Column(name = "RamSal", length = 100)
     private byte[] salt;
-    
+
     @Column(name = "OTP", length = 100)
     private String token;
 
@@ -88,7 +88,7 @@ public class User implements Serializable {
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
-    
+
     public String getToken() {
         return token;
     }

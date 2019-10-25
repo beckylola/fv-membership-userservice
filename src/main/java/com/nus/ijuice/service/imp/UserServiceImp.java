@@ -194,7 +194,7 @@ public class UserServiceImp implements UserService {
                         userRepository.save(user);
                         response = PasswordChangeConstants.PASSWORD_CHANGE_SUCCESS;
                         logger.info("User password changed succesfully");
-                       // userRepository.updateResetPassword(0, passwordDto.getEmail());
+                        // userRepository.updateResetPassword(0, passwordDto.getEmail());
 
                     } else {
                         response = PasswordChangeConstants.PASSWORD_CHANGE_FAILURE;
@@ -214,10 +214,10 @@ public class UserServiceImp implements UserService {
     public OTPDto SendOTPToUserEmail(EmailDto dto) {
         OTPDto otpDto = new OTPDto();
         User user = userRepository.findUserByEmail(dto.getEmail());
-        
+
         if (user != null) {
             String otp = this.getRandomNumberString();
-            
+
             templateOptObj = emailUtil.loadTemplate(2);
             if (templateOptObj != null) {
                 templateObj = templateOptObj;
@@ -228,7 +228,7 @@ public class UserServiceImp implements UserService {
                         templateObj.getSubject(), emailContent, emailConfig);
                 user.setToken(otp);
                 this.userRepository.save(user);
-                
+
                 otpDto.setEmail(dto.getEmail());
                 otpDto.setOtp(otp);
                 otpDto.setExpAt(getAfterAdding(2));
@@ -250,7 +250,7 @@ public class UserServiceImp implements UserService {
     private String getHashPassword(String passwordToHash,byte[] salt){
         String  securePassword="";
 
-            securePassword = get_SHA_512_SecurePassword(passwordToHash, salt);
+        securePassword = get_SHA_512_SecurePassword(passwordToHash, salt);
 
         return securePassword;
 
@@ -311,12 +311,12 @@ public class UserServiceImp implements UserService {
     }
 
     public Date getAfterAdding(int times) {
-    final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
+        final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
 
-    Calendar date = Calendar.getInstance();
-    long t = date.getTimeInMillis();
-    Date afterAddingTwoMins = new Date(t + (times * ONE_MINUTE_IN_MILLIS));
-    return afterAddingTwoMins;
-}
+        Calendar date = Calendar.getInstance();
+        long t = date.getTimeInMillis();
+        Date afterAddingTwoMins = new Date(t + (times * ONE_MINUTE_IN_MILLIS));
+        return afterAddingTwoMins;
+    }
 
 }
