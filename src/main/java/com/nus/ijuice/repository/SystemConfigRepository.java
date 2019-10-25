@@ -12,7 +12,6 @@ public interface SystemConfigRepository extends JpaRepository<SystemConfig, Stri
 
     public SystemConfig findSystemConfigByConfigname(String key);
 
-    SystemConfig findSystemConfigById(int id);
+    public SystemConfig findSystemConfigById(int id);
 
-    List<SystemConfig> findSystemConfigsByConfignameAndConfigsettingAndInformationAndEffectFrom(String type, String name, String value, String effectiveDate);
 }

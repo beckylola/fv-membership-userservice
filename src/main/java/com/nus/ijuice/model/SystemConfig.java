@@ -17,21 +17,6 @@ public class SystemConfig {
 
     private String information;
 
-    @Column(name = "approveby")
-    private String approveBy;
-
-    @Column(name = "approveon")
-    private String approveOn;
-
-    @Column(name = "effective_from")
-    private String effectFrom;
-
-    @Column(name = "createby")
-    private String createBy;
-
-    @Column(name = "createon")
-    private String createOn;
-
     public Integer getId() {
         return id;
     }
@@ -64,43 +49,4 @@ public class SystemConfig {
         this.information = information;
     }
 
-    public String getApproveBy() {
-        return approveBy;
-    }
-
-    public void setApproveBy(String approveBy) {
-        this.approveBy = approveBy;
-    }
-
-    public String getApproveOn() {
-        return approveOn;
-    }
-
-    public void setApproveOn(String approveOn) {
-        this.approveOn = approveOn;
-    }
-
-    public String getEffectFrom() {
-        return effectFrom;
-    }
-
-    public void setEffectFrom(String effectFrom) {
-        this.effectFrom = effectFrom;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
-
-    public String getCreateOn() {
-        return createOn;
-    }
-
-    public void setCreateOn(String createOn) {
-        this.createOn = createOn;
-    }
 }

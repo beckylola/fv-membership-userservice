@@ -1,9 +1,18 @@
 package com.nus.ijuice.dto;
 
 public class PasswordDto {
+	private String token;
     private String currentPassword;
     private String newPassword;
     private String email;
+    
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getCurrentPassword() {
         return currentPassword;

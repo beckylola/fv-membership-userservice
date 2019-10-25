@@ -22,6 +22,11 @@ public class User implements Serializable {
 
     @Column(name = "password_hash", nullable = false, length = 500)
     private String password;
+    @Column(name = "RamSal", length = 100)
+    private byte[] salt;
+    
+    @Column(name = "OTP", length = 100)
+    private String token;
 
     @Column(name = "emailid", unique = true, nullable = false, length = 100)
     private String email;
@@ -82,6 +87,14 @@ public class User implements Serializable {
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
+    }
+    
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getUserId() {
@@ -154,5 +167,13 @@ public class User implements Serializable {
 
     public void setAccount_source(String account_source) {
         this.account_source = account_source;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
     }
 }

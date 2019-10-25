@@ -44,7 +44,7 @@ public class LoginController {
             @Valid @RequestBody VerifyUserDto dto) throws Exception {
         try {
             PasswordResponseDto userdto = userService.login(dto);
-            logger.info(" user login successfully");
+           // logger.info(" user login successfully");
             return new ResponseEntity<PasswordResponseDto>(userdto, HttpStatus.OK);
         } catch (Exception e) {
             throw e;
@@ -52,7 +52,7 @@ public class LoginController {
     }
 
     @PostMapping(path = "/forgotpassword", consumes = "application/json")
-    public ResponseEntity<PasswordResponseDto> forgotPassword(@RequestBody EmailDto emailDto) {
+    public ResponseEntity<PasswordResponseDto> forgotPassword(@Valid @RequestBody EmailDto emailDto) {
 
         String response = userService.forgotPassword(emailDto.getEmail());
         PasswordResponseDto responseDto = new PasswordResponseDto();
@@ -72,7 +72,7 @@ public class LoginController {
 
     @PostMapping(path = "/changepassword", consumes = "application/json")
     // @PreAuthorize("hasPermission('UserController', 'CREATE')")
-    public ResponseEntity<Object> changePassword(@RequestBody PasswordDto passwordDto) {
+    public ResponseEntity<Object> changePassword(@Valid @RequestBody PasswordDto passwordDto) {
         String response = userService.changePassword(passwordDto);
         PasswordResponseDto responseDto = new PasswordResponseDto();
 
@@ -95,7 +95,7 @@ public class LoginController {
     }
 
     @PostMapping(path = "/sendOtp", consumes = "application/json")
-    public ResponseEntity<OTPDto> sendOtp(@RequestBody EmailDto emailDto) {
+    public ResponseEntity<OTPDto> sendOtp(@Valid @RequestBody EmailDto emailDto) {
 
         OTPDto response = userService.SendOTPToUserEmail(emailDto);
 
