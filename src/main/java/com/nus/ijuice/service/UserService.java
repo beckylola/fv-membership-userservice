@@ -10,7 +10,7 @@ public interface UserService {
 
     UserDto save(UserDto userDto) throws ParseException;
 
-    PasswordResponseDto login(VerifyUserDto dto) throws Exception;
+    BaseResponseDto login(VerifyUserDto dto) throws Exception;
 
     String forgotPassword(String email);
 

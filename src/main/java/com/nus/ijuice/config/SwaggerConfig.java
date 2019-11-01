@@ -29,8 +29,8 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
 
     private ApiInfo metaData() {
         return new ApiInfoBuilder()
-                .title("User service REST API Documentation")
-                .contact(new Contact("NUSSE", "SE27", ""))
+                .title("User management service REST API Documentation")
+                .contact(new Contact("xujiao", "ec2-3-82-235-227.compute-1.amazonaws.com:8085", ""))
                 .build();
     }
 

@@ -84,7 +84,7 @@ public class FVMembershipApplicationTests extends AbstractApplicationTest {
         logger.info(content);
 
         assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
-        PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
+        BaseResponseDto response = mapFromJson(content, BaseResponseDto.class);
         assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
         assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
 
@@ -108,7 +108,7 @@ public class FVMembershipApplicationTests extends AbstractApplicationTest {
         logger.info(content);
 
         assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
-        PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
+        BaseResponseDto response = mapFromJson(content, BaseResponseDto.class);
         assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
         assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
     }
@@ -130,7 +130,7 @@ public class FVMembershipApplicationTests extends AbstractApplicationTest {
         logger.info(content);
 
         assertTrue("Response should not be empty", StringUtils.isNotEmpty(content));
-        PasswordResponseDto response = mapFromJson(content, PasswordResponseDto.class);
+        BaseResponseDto response = mapFromJson(content, BaseResponseDto.class);
         assertTrue("Message should not be empty", StringUtils.isNotEmpty(response.getMessage()));
         assertTrue("Status should not be empty", StringUtils.isNotEmpty(response.getStatus()));
     }

@@ -2,21 +2,25 @@ package com.nus.ijuice.controller;
 
 import com.nus.ijuice.dto.*;
 import com.nus.ijuice.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.nus.ijuice.util.EmailAppSettingConstant;
 import com.nus.ijuice.util.PasswordChangeConstants;
 
 import javax.validation.Valid;
 import java.text.ParseException;
 
+
+@CrossOrigin
+@Api(value="IJOOZE - User Management Service API ", description="User controllers")
 @RestController
 @RequestMapping(path = "/fv/v1.0")
 public class LoginController {
@@ -26,7 +30,12 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
-
+    @ApiOperation(value = "User Register", response = UserDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully create user"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(path = "/register", produces = "application/json")
     public ResponseEntity<UserDto> createUser(
             @Valid @RequestBody UserDto userDto) throws ParseException {
@@ -39,23 +48,30 @@ public class LoginController {
         }
     }
 
+
+    @ApiOperation(value = "User Login", response = BaseResponseDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully verify user"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(path = "/login", produces = "application/json")
-    public ResponseEntity<PasswordResponseDto> verifyUser(
+    public ResponseEntity<BaseResponseDto> verifyUser(
             @Valid @RequestBody VerifyUserDto dto) throws Exception {
         try {
-            PasswordResponseDto userdto = userService.login(dto);
+            BaseResponseDto userdto = userService.login(dto);
            // logger.info(" user login successfully");
-            return new ResponseEntity<PasswordResponseDto>(userdto, HttpStatus.OK);
+            return new ResponseEntity<BaseResponseDto>(userdto, HttpStatus.OK);
         } catch (Exception e) {
             throw e;
         }
     }
 
     @PostMapping(path = "/forgotpassword", consumes = "application/json")
-    public ResponseEntity<PasswordResponseDto> forgotPassword(@Valid @RequestBody EmailDto emailDto) {
+    public ResponseEntity<BaseResponseDto> forgotPassword(@Valid @RequestBody EmailDto emailDto) {
 
         String response = userService.forgotPassword(emailDto.getEmail());
-        PasswordResponseDto responseDto = new PasswordResponseDto();
+        BaseResponseDto responseDto = new BaseResponseDto();
         if (response.equals(EmailAppSettingConstant.PASSWORD_SENT)) {
             responseDto.setStatus("1");
             responseDto.setMessage(EmailAppSettingConstant.PASSWORD_SENT);
@@ -66,15 +82,21 @@ public class LoginController {
             responseDto.setMessage(EmailAppSettingConstant.INVALID_EMAILID);
             logger.info("Invalid email '" + emailDto.getEmail() + "'");
         }
-        return new ResponseEntity<PasswordResponseDto>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<BaseResponseDto>(responseDto, HttpStatus.OK);
     }
 
 
+    @ApiOperation(value = "Reset password", response = BaseResponseDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully reset password"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(path = "/changepassword", consumes = "application/json")
     // @PreAuthorize("hasPermission('UserController', 'CREATE')")
     public ResponseEntity<Object> changePassword(@Valid @RequestBody PasswordDto passwordDto) {
         String response = userService.changePassword(passwordDto);
-        PasswordResponseDto responseDto = new PasswordResponseDto();
+        BaseResponseDto responseDto = new BaseResponseDto();
 
         if (response.equals(PasswordChangeConstants.PASSWORD_CHANGE_SUCCESS)) {
             responseDto.setStatus("1");
@@ -94,6 +116,14 @@ public class LoginController {
         return new ResponseEntity<Object>(responseDto, HttpStatus.OK);
     }
 
+
+
+    @ApiOperation(value = "Send otp to user's email as MFA code", response = OTPDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully send otp"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(path = "/sendOtp", consumes = "application/json")
     public ResponseEntity<OTPDto> sendOtp(@Valid @RequestBody EmailDto emailDto) {
 

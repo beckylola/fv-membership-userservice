@@ -9,9 +9,8 @@ import static com.nus.ijuice.util.MessageConstants.USER_EMAIL_EXIST;
 import static com.nus.ijuice.util.MessageConstants.USER_EMAIL_REQUIRED;
 import static com.nus.ijuice.util.MessageConstants.USER_NAME_REQUIRED;
 
-public class UserDto {
+public class UserDto extends BaseResponseDto{
 
-    @NotEmpty(message = USER_NAME_REQUIRED)
     private String username;
 
     @NotEmpty(message = "{user.password.error.required}")

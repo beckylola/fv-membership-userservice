@@ -59,12 +59,19 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UserDto save(UserDto userDto) {
+        UserDto responseDto = new UserDto();
+
         User user = mapper.convertValue(userDto, User.class);
 
         User exist = this.userRepository.findUserByEmail(user.getEmail());
-        if (exist == null) {
-//            user.setPassword(passwordEncoder
-//                    .encode(user.getPassword()));
+        if (exist != null) {
+
+          responseDto.setStatus("0");
+          responseDto.setMessage("Sorry, your email already been registered.");
+
+
+        } else {
+
             try {
                 byte[] salt = getSalt();
                 user.setSalt(salt);
@@ -78,30 +85,28 @@ public class UserServiceImp implements UserService {
             user.setCreatedOn(date);
             if (user.getAccount_source() == null)
                 user.setAccount_source("FvMembership");
-
-        } else {
-
-            exist.setUserId(user.getUserId());
+            user = userRepository.save(user);
+            user.setPassword(userDto.getPassword());
+            responseDto=mapper.convertValue(user, UserDto.class);
+            responseDto.setStatus("1");
+            responseDto.setMessage("User register success.");
 
         }
-        user = userRepository.save(user);
-        user.setPassword(userDto.getPassword());
 
-        return mapper.convertValue(user, UserDto.class);
+
+        return responseDto;
 
     }
 
     @Override
-    public PasswordResponseDto login(VerifyUserDto dto) throws Exception {
-        PasswordResponseDto responseDto = new PasswordResponseDto();
+    public BaseResponseDto login(VerifyUserDto dto) throws Exception {
+        BaseResponseDto responseDto = new BaseResponseDto();
         User exist = this.userRepository.findUserByUsernameOrEmail(dto.getUsername(), dto.getUsername());
 
         if (exist == null) {
             responseDto.setStatus("0");
             responseDto.setMessage("User name or email not found");
         } else {
-//            boolean isPasswordMatches = this.passwordEncoder.matches(
-//                    dto.getPassword(), exist.getPassword());
             boolean isPasswordMatches=false;
             if(getHashPassword(dto.getPassword(),exist.getSalt()).equals(exist.getPassword())){
                 isPasswordMatches=true;
@@ -125,8 +130,6 @@ public class UserServiceImp implements UserService {
         User user = userRepository.findUserByEmail(email);
         if (user != null) {
             String generatedPassword = generateRandomPassword();
-//            user.setPassword(new BCryptPasswordEncoder()
-//                    .encode(generatedPassword));
             try {
                 byte[] salt = getSalt();
                 user.setPassword(getHashPassword(user.getPassword(),salt));
@@ -155,14 +158,11 @@ public class UserServiceImp implements UserService {
 
     @Override
     public String changePassword(PasswordDto passwordDto) {
-        // boolean isPasswordChanged = false;
         String response = "";
         String passwordPattern = "";
         User user = userRepository.findUserByEmail(passwordDto.getEmail());
 
         if (user != null) {
-//            boolean isPasswordMatches = this.passwordEncoder.matches(
-//                    passwordDto.getCurrentPassword(), user.getPassword());
             if(!passwordDto.getToken().equalsIgnoreCase(user.getToken())) {
                 response="Token not match.";
             }

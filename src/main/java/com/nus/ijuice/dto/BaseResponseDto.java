@@ -1,6 +1,6 @@
 package com.nus.ijuice.dto;
 
-public class PasswordResponseDto {
+public class BaseResponseDto {
     private String status;
     private String message;
 
