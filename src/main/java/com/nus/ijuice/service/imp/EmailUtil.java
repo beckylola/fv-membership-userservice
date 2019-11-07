@@ -7,6 +7,7 @@ import com.nus.ijuice.model.User;
 import com.nus.ijuice.repository.SystemConfigRepository;
 import com.nus.ijuice.repository.TemplateRepository;
 import com.nus.ijuice.service.EmailService;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ public class EmailUtil implements EmailService {
     @Override
     public EmailConfiguration findByKey(List<String> key) {
         List<SystemConfig> systemConfigList = systemConfigRepository.findSystemConfigsByConfignameIn(key);
+
         EmailConfiguration emailconfig = new EmailConfiguration();
         systemConfigList
                 .forEach(item -> {

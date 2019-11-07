@@ -10,6 +10,7 @@ import com.nus.ijuice.repository.SystemConfigRepository;
 import com.nus.ijuice.repository.UserRepository;
 import com.nus.ijuice.service.UserService;
 import com.nus.ijuice.model.User;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,7 @@ public class UserServiceImp implements UserService {
         UserDto responseDto = new UserDto();
 
         User user = mapper.convertValue(userDto, User.class);
+        String passwordPattern = "";
 
         User exist = this.userRepository.findUserByEmail(user.getEmail());
         if (exist != null) {
@@ -71,25 +73,37 @@ public class UserServiceImp implements UserService {
 
 
         } else {
+        	 SystemConfig appSetting = systemConfigRepository.findSystemConfigByConfigname(PasswordChangeConstants.PASSWORD_PATTERN);
+        
+        	 if (appSetting != null) {
+                 if (appSetting.getConfigname().equals(PasswordChangeConstants.PASSWORD_PATTERN)) {
+                     passwordPattern = appSetting.getConfigsetting();
+                 }
+             }
+             if (passwordValidator.validate(userDto.getPassword(), passwordPattern)) {
+            	 try {
+                     byte[] salt = getSalt();
+                     user.setSalt(salt);
+                     user.setPassword(getHashPassword(user.getPassword(),salt));
+                 } catch (NoSuchAlgorithmException e) {
+                     e.printStackTrace();
+                 }
 
-            try {
-                byte[] salt = getSalt();
-                user.setSalt(salt);
-                user.setPassword(getHashPassword(user.getPassword(),salt));
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-
-            Date date = new Date();
-            user.setLastPasswordChangedOn(date);
-            user.setCreatedOn(date);
-            if (user.getAccount_source() == null)
-                user.setAccount_source("FvMembership");
-            user = userRepository.save(user);
-            user.setPassword(userDto.getPassword());
-            responseDto=mapper.convertValue(user, UserDto.class);
-            responseDto.setStatus("1");
-            responseDto.setMessage("User register success.");
+                 Date date = new Date();
+                 user.setLastPasswordChangedOn(date);
+                 user.setCreatedOn(date);
+                 if (user.getAccount_source() == null)
+                     user.setAccount_source("FvMembership");
+                 user = userRepository.save(user);
+                 user.setPassword(userDto.getPassword());
+                 responseDto=mapper.convertValue(user, UserDto.class);
+                 responseDto.setStatus("1");
+                 responseDto.setMessage("User register success."); 
+             } 
+             else {
+            	 responseDto.setStatus("0");
+                 responseDto.setMessage(PasswordChangeConstants.PASSWORD_POLICY_CORRUPT); 
+             }
 
         }
 
@@ -224,6 +238,7 @@ public class UserServiceImp implements UserService {
                 String emailContent = emailUtil.replaceEmailContentPlaceholder(
                         user, templateObj.getEmailContent(), otp);
                 emailConfig = emailUtil.findByKey(emailUtil.getEmailKeyList());
+                emailConfig=this.getDecryptEmailConfig(emailConfig);
                 emailUtil.sendSimpleMessage(user.getEmail(),
                         templateObj.getSubject(), emailContent, emailConfig);
                 user.setToken(otp);
@@ -246,6 +261,19 @@ public class UserServiceImp implements UserService {
             otpDto.setMessage("Email not found");
         }
         return otpDto;
+    }
+
+    private EmailConfiguration getDecryptEmailConfig(EmailConfiguration dto){
+        EmailConfiguration emailConfiguration=dto;
+        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+        textEncryptor.setPasswordCharArray("19poiqweXJ".toCharArray());
+        String myEncryptedText=emailConfiguration.getUserName();
+        String plainText = textEncryptor.decrypt(myEncryptedText);
+        emailConfiguration.setUserName(plainText);
+        String myEncryptedText2=emailConfiguration.getPassword();
+        String plainText2 = textEncryptor.decrypt(myEncryptedText2);
+        emailConfiguration.setPassword(plainText2);
+        return emailConfiguration;
     }
     private String getHashPassword(String passwordToHash,byte[] salt){
         String  securePassword="";
