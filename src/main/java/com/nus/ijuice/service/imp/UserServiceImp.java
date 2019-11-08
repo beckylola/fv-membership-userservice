@@ -94,16 +94,38 @@ public class UserServiceImp implements UserService {
                  user.setCreatedOn(date);
                  if (user.getAccount_source() == null)
                      user.setAccount_source("FvMembership");
-                 user = userRepository.save(user);
-                 user.setPassword(userDto.getPassword());
-                 responseDto=mapper.convertValue(user, UserDto.class);
-                 responseDto.setStatus("1");
-                 responseDto.setMessage("User register success."); 
+
+
+                 String otp = this.getRandomNumberString();
+
+                 templateOptObj = emailUtil.loadTemplate(1);
+                 if (templateOptObj != null) {
+                     templateObj = templateOptObj;
+                     String emailContent = emailUtil.replaceEmailContentPlaceholder(
+                             user, templateObj.getEmailContent(), otp);
+                     emailConfig = emailUtil.findByKey(emailUtil.getEmailKeyList());
+                     emailConfig=this.getDecryptEmailConfig(emailConfig);
+                     emailUtil.sendSimpleMessage(user.getEmail(),
+                             templateObj.getSubject(), emailContent, emailConfig);
+                     user.setToken(otp);
+                     this.userRepository.save(user);
+                     user.setPassword(userDto.getPassword());
+                     responseDto=mapper.convertValue(user, UserDto.class);
+                     responseDto.setStatus("1");
+                     responseDto.setMessage("User register success.");
+
+                 }
+                 else{
+                     responseDto.setStatus("0");
+                     responseDto.setMessage("Template not found.");
+                 }
+
              } 
              else {
             	 responseDto.setStatus("0");
                  responseDto.setMessage(PasswordChangeConstants.PASSWORD_POLICY_CORRUPT); 
              }
+
 
         }
 
